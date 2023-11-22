@@ -56,3 +56,12 @@ sudo -u www-data cp /srv/www/wordpress/wp-config-sample.php /srv/www/wordpress/w
 sudo -u www-data sed -i 's/database_name_here/wordpress/' /srv/www/wordpress/wp-config.php
 sudo -u www-data sed -i 's/username_here/wordpress/' /srv/www/wordpress/wp-config.php
 sudo -u www-data sed -i 's/password_here/joe/' /srv/www/wordpress/wp-config.php
+
+# replace keys 
+SALTS=$(curl -s https://api.wordpress.org/secret-key/1.1/salt/)
+while read -r SALT; do
+SEARCH="define('$(echo "$SALT" | cut -d "'" -f 2)"
+REPLACE=$(echo "$SALT" | cut -d "'" -f 4)
+echo "... $SEARCH ... $SEARCH ..."
+sudo sed -i "/^$SEARCH/s/put your unique phrase here/$(echo $REPLACE | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g')/" /srv/www//wordpress/wp-config.php
+done <<< "$SALTS"
