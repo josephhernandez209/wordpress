@@ -103,7 +103,15 @@ define( 'DB_COLLATE', '' );
  *
  * @since 2.6.0
  */
-$(curl https://api.wordpress.org/secret-key/1.1/salt/)
+ define('AUTH_KEY',         'F;N4rmte4h)lC^-Y)EPYR5P~jSvXuC[2AbZ;yYc8nIdaI^MBZa4##)pW:aR8s3DL');
+define('SECURE_AUTH_KEY',  'LA%YBFugUDClK1kGDuu%P<`+P_%>[-Q#z}Fi/pXHhh]+?2igD*SA2+Bkp3-GMuL|');
+define('LOGGED_IN_KEY',    '33h27oq9iSA|HM:Q1_StXo~]N[b@Q*0Okzn4|_:;E(9d+w#t&?RoXSTBV=ECPg4j');
+define('NONCE_KEY',        '[+}>:a msn&:&|~^*a#>{n+&>D9?67ukN]O#.gQ/[)n)k{h:Ir{bXhs0t.]XyXee');
+define('AUTH_SALT',        'qiz8^-fbZf2=nau1:jR*`GXx[;3<Ti&500*`lw`)081q|8{|y-V$edI3]0Pa~NP ');
+define('SECURE_AUTH_SALT', ';K;p`tC)}+Di*=|RV*M)&c}a.c`(98d8Lj*g!GTG:f]*&/*O:q:h-.S`Z-b).l@L');
+define('LOGGED_IN_SALT',   'H_}+&VoWanQ|xU7s9+[s=~0p4ClKzzFLmV,nPSC+(C-0JN`}F/:?mnUr9=hL0MSb');
+define('NONCE_SALT',       'i+uB/%uJO+ [2/~EyzQ9Lg=t~5|<]CO*z86NJ?M^w%{gzS>e&1-j|rV[h:aBSk0[');
+
 /**#@-*/
 
 /**
@@ -145,3 +153,18 @@ require_once ABSPATH . 'wp-settings.php';
 EOF
 
 echo "http://$(hostname -I | tr -d ' ')/wp-login.php"
+
+# install wordpress cli 
+if (wp --info)
+then 
+  echo "wp-cli already installed"
+else
+  echo "installing wp-cli"
+  curl -OJL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+  sudo install -o root -g root -m 0755 wp-cli.phar /usr/local/bin/wp
+fi
+
+sleep 5
+
+wp core install --url=$(hostname -I | tr -d ' ') --title=Example --admin_user=joe --admin_password=joe --admin_email=info@example.com --path=/srv/www/wordpress
+

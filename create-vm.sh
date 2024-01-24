@@ -8,5 +8,5 @@ else
   sleep 2
 fi
 
-multipass launch --name wordpress -c 2 -m 2G
-multipass transfer wordpress.sh wordpress:. && multipass shell wordpress
+multipass launch --name wordpress -c 4 -m 4G
+multipass transfer wordpress.sh wordpress:. && multipass exec wordpress -- bash wordpress.sh
