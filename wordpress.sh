@@ -166,7 +166,16 @@ else
   sudo install -o root -g root -m 0755 wp-cli.phar /usr/local/bin/wp
 fi
 
-sleep 5
+sleep 10
 
 wp core install --url=$(hostname -I | tr -d ' ') --title=Example --admin_user=joe --admin_password=joe --admin_email=info@example.com --path=/srv/www/wordpress
 
+sudo wp plugin update --all --path=/srv/www/wordpress --allow-root
+ 
+# install cloudflared for tunnel
+
+curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb && 
+
+sudo dpkg -i cloudflared.deb && 
+
+sudo cloudflared service install $CLOUDFLARED_TOKEN
