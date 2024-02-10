@@ -168,7 +168,7 @@ fi
 
 sleep 10
 
-wp core install --url=$(hostname -I | tr -d ' ') --title=Example --admin_user=joe --admin_password=joe --admin_email=info@example.com --path=/srv/www/wordpress
+wp core install --url=$(hostname -I | awk '{print $1}') --title=Example --admin_user=joe --admin_password=joe --admin_email=info@example.com --path=/srv/www/wordpress
 
 sudo wp plugin update --all --path=/srv/www/wordpress --allow-root
  
