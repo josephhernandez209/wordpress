@@ -154,7 +154,7 @@ require_once ABSPATH . 'wp-settings.php';
 
 EOF
 
-echo "http://$(hostname -I | tr -d ' ')/wp-login.php"
+echo "http://$(hostname -I | awk '{print $1}')/wp-login.php"
 
 # install wordpress cli 
 if (wp --info)
