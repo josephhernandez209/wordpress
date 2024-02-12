@@ -205,3 +205,11 @@ else
   echo "activating cloudflared service"
   sudo cloudflared service install $(cloudflared tunnel token 209bits)
 fi
+
+if (wp plugin get woocommerce --path=/srv/www/wordpress)
+then 
+  echo "woo plugin already installed"
+else
+  echo "installing woo"
+  sudo wp plugin install woocommerce --activate --path=/srv/www/wordpress --allow-root
+fi  
