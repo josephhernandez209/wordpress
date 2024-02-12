@@ -154,7 +154,7 @@ require_once ABSPATH . 'wp-settings.php';
 
 EOF
 
-echo "http://$(hostname -I | tr -d ' ')/wp-login.php"
+echo "http://$(hostname -I | awk '{print $1}')/wp-login.php"
 
 # install wordpress cli 
 if (wp --info)
@@ -168,7 +168,7 @@ fi
 
 sleep 10
 
-wp core install --url=$(hostname -I | tr -d ' ') --title=Example --admin_user=joe --admin_password=joe --admin_email=info@example.com --path=/srv/www/wordpress
+wp core install --url=$(hostname -I | awk '{print $1}') --title=Example --admin_user=joe --admin_password=joe --admin_email=info@example.com --path=/srv/www/wordpress
 
 sudo wp plugin update --all --path=/srv/www/wordpress --allow-root
  
