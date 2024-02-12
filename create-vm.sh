@@ -25,4 +25,4 @@ else
   multipass launch --name wordpress -c 4 -m 4G
 fi
 
-multipass transfer wordpress.sh wordpress:. && multipass exec wordpress -- bash wordpress.sh && multipass exec wordpress -- bash cloudflared.sh
+multipass transfer wordpress.sh cloudflared.sh wordpress:. && multipass exec wordpress -- bash wordpress.sh && multipass exec wordpress -- bash cloudflared.sh
