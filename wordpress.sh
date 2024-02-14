@@ -27,9 +27,20 @@ else
   sudo chown www-data: /srv/www
 fi
 
-curl https://wordpress.org/latest.tar.gz | sudo -u www-data tar zx -C /srv/www
+if (stat /srv/www/wordpress)
+then
+  echo "wordpress already installed"
+else
+  echo "installing wordpress"
+  curl https://wordpress.org/latest.tar.gz | sudo -u www-data tar zx -C /srv/www
+fi
 
-cat <<- EOF | sudo tee /etc/apache2/sites-available/wordpress.conf
+if (stat /etc/apache2/sites-available/wordpress.conf)
+then
+  echo "/etc/apache2/sites-available/wordpress.conf already exists"
+else
+  echo "writing /etc/apache2/sites-available/wordpress.conf"
+  cat <<- EOF | sudo tee /etc/apache2/sites-available/wordpress.conf
 <VirtualHost *:80>
     DocumentRoot /srv/www/wordpress
     <Directory /srv/www/wordpress>
@@ -44,6 +55,7 @@ cat <<- EOF | sudo tee /etc/apache2/sites-available/wordpress.conf
     </Directory>
 </VirtualHost>
 EOF
+fi
 
 sudo a2ensite wordpress
 
@@ -63,8 +75,12 @@ sudo mysql -u root -e 'FLUSH PRIVILEGES;'
 
 sudo service mysql start
 
-# write wp-config.php
-cat <<-'EOF' | sudo tee /srv/www/wordpress/wp-config.php 
+if (stat /srv/www/wordpress/wp-config.php)
+then
+  echo "/srv/www/wordpress/wp-config.php already exists"
+else
+  echo "writing /srv/www/wordpress/wp-config.php"
+  cat <<-'EOF' | sudo tee /srv/www/wordpress/wp-config.php 
 <?php
 /**
  * The base configuration for WordPress
@@ -163,6 +179,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once ABSPATH . 'wp-settings.php';
 
 EOF
+fi
 
 # install wordpress cli 
 if (wp --info)
