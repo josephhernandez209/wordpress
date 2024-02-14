@@ -154,8 +154,6 @@ require_once ABSPATH . 'wp-settings.php';
 
 EOF
 
-echo "http://$(hostname -I | awk '{print $1}')/wp-login.php"
-
 # install wordpress cli 
 if (wp --info)
 then 
@@ -171,37 +169,13 @@ sleep 10
 wp core install --url=$(hostname -I | awk '{print $1}') --title=Example --admin_user=joe --admin_password=joe --admin_email=info@example.com --path=/srv/www/wordpress
 
 sudo wp plugin update --all --path=/srv/www/wordpress --allow-root
- 
-# install cloudflared for tunnel
 
-if (stat cloudflared-linux-amd64.deb )
+if (wp plugin get woocommerce --path=/srv/www/wordpress)
 then 
-  echo "cloudflared-linux-amd64.deb already downloaded"
+  echo "woo plugin already installed"
 else
-  echo "downloading cloudflared-linux-amd64.deb"
-  curl -OJL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb 
-fi
+  echo "installing woo"
+  sudo wp plugin install woocommerce --activate --path=/srv/www/wordpress --allow-root
+fi  
 
-if (cloudflared --version)
-then 
-  echo "cloudlfared already installed"
-else
- echo "installing cloudflared"
- sudo dpkg -i cloudflared-linux-amd64.deb
-fi
-
-if (cloudflared tunnel token 209bits)
-then  
-  echo "cloudflare tunnel already authenticated"
-else
-  echo "authenticating cloudflare tunnel"
-  cloudflared tunnel login 
-fi
-
-if (systemctl is-active cloudflared)
-then 
-  echo "cloudflared service already active"
-else
-  echo "activating cloudflared service"
-  sudo cloudflared service install $(cloudflared tunnel token 209bits)
-fi
+echo "http://$(hostname -I | awk '{print $1}')/wp-login.php"
