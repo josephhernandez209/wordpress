@@ -1,22 +1,32 @@
-sudo apt update
-sudo apt install -y apache2 \
-                 ghostscript \
-                 libapache2-mod-php \
-                 mysql-server \
-                 php \
-                 php-bcmath \
-                 php-curl \
-                 php-imagick \
-                 php-intl \
-                 php-json \
-                 php-mbstring \
-                 php-mysql \
-                 php-xml \
-                 php-zip \
-                 sendmail
-                 
-sudo mkdir -p /srv/www
-sudo chown www-data: /srv/www
+#!/bin/bash
+
+# An idempotent script to install wordpress with Woo.
+
+if (dpkg -s apache2 ghostscript libapache2-mod-php mysql-server php php-bcmath php-curl php-imagick php-intl php-json php-mbstring php-mysql php-xml php-zip sendmail)
+then
+  echo "wordpress dependencies are already installed"
+else
+  echo "installing wordpress dependencies"
+  sudo apt update 
+  sudo apt install -y apache2 ghostscript libapache2-mod-php mysql-server php php-bcmath php-curl php-imagick php-intl php-json php-mbstring php-mysql php-xml php-zip sendmail
+fi
+
+if (stat /srv/www)
+then
+  echo "/srv/www already exists"
+else
+  echo "creating directory /srv/www"                
+  sudo mkdir -p /srv/www
+fi
+
+if (test "$(stat -c '%U' /srv/www)" = "www-data")
+then
+  echo "/srv/www owner already www-data"
+else
+  echo "setting owner on /srv/www to www-data"
+  sudo chown www-data: /srv/www
+fi
+
 curl https://wordpress.org/latest.tar.gz | sudo -u www-data tar zx -C /srv/www
 
 cat <<- EOF | sudo tee /etc/apache2/sites-available/wordpress.conf
