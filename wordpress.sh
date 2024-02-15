@@ -1,25 +1,46 @@
-sudo apt update
-sudo apt install -y apache2 \
-                 ghostscript \
-                 libapache2-mod-php \
-                 mysql-server \
-                 php \
-                 php-bcmath \
-                 php-curl \
-                 php-imagick \
-                 php-intl \
-                 php-json \
-                 php-mbstring \
-                 php-mysql \
-                 php-xml \
-                 php-zip \
-                 sendmail
-                 
-sudo mkdir -p /srv/www
-sudo chown www-data: /srv/www
-curl https://wordpress.org/latest.tar.gz | sudo -u www-data tar zx -C /srv/www
+#!/bin/bash
 
-cat <<- EOF | sudo tee /etc/apache2/sites-available/wordpress.conf
+# An idempotent script to install wordpress with Woo.
+
+if (dpkg -s apache2 ghostscript libapache2-mod-php mysql-server php php-bcmath php-curl php-imagick php-intl php-json php-mbstring php-mysql php-xml php-zip sendmail)
+then
+  echo "wordpress dependencies are already installed"
+else
+  echo "installing wordpress dependencies"
+  sudo apt update 
+  sudo apt install -y apache2 ghostscript libapache2-mod-php mysql-server php php-bcmath php-curl php-imagick php-intl php-json php-mbstring php-mysql php-xml php-zip sendmail
+fi
+
+if (stat /srv/www)
+then
+  echo "/srv/www already exists"
+else
+  echo "creating directory /srv/www"                
+  sudo mkdir -p /srv/www
+fi
+
+if (test "$(stat -c '%U' /srv/www)" = "www-data")
+then
+  echo "/srv/www owner already www-data"
+else
+  echo "setting owner on /srv/www to www-data"
+  sudo chown www-data: /srv/www
+fi
+
+if (stat /srv/www/wordpress)
+then
+  echo "wordpress already installed"
+else
+  echo "installing wordpress"
+  curl https://wordpress.org/latest.tar.gz | sudo -u www-data tar zx -C /srv/www
+fi
+
+if (stat /etc/apache2/sites-available/wordpress.conf)
+then
+  echo "/etc/apache2/sites-available/wordpress.conf already exists"
+else
+  echo "writing /etc/apache2/sites-available/wordpress.conf"
+  cat <<- EOF | sudo tee /etc/apache2/sites-available/wordpress.conf
 <VirtualHost *:80>
     DocumentRoot /srv/www/wordpress
     <Directory /srv/www/wordpress>
@@ -34,6 +55,7 @@ cat <<- EOF | sudo tee /etc/apache2/sites-available/wordpress.conf
     </Directory>
 </VirtualHost>
 EOF
+fi
 
 sudo a2ensite wordpress
 
@@ -53,8 +75,12 @@ sudo mysql -u root -e 'FLUSH PRIVILEGES;'
 
 sudo service mysql start
 
-# write wp-config.php
-cat <<-'EOF' | sudo tee /srv/www/wordpress/wp-config.php 
+if (stat /srv/www/wordpress/wp-config.php)
+then
+  echo "/srv/www/wordpress/wp-config.php already exists"
+else
+  echo "writing /srv/www/wordpress/wp-config.php"
+  cat <<-'EOF' | sudo tee /srv/www/wordpress/wp-config.php 
 <?php
 /**
  * The base configuration for WordPress
@@ -153,6 +179,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once ABSPATH . 'wp-settings.php';
 
 EOF
+fi
 
 # install wordpress cli 
 if (wp --info)
