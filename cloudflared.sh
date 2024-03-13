@@ -15,7 +15,7 @@ then
   echo "cloudlfared already installed"
 else
  echo "installing cloudflared"
- sudo dpkg -i cloudflared-linux-amd64.deb
+ sudo dpkg -i cloudflared-linux-$(dpkg --print-architecture).deb
 fi
 
 if (cloudflared tunnel token 209bits)
