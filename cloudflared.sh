@@ -2,12 +2,12 @@
 
 # install cloudflared for tunnel
 
-if (stat cloudflared-linux-amd64.deb )
+if (stat cloudflared-linux-$(dpkg --print-architecture).deb)
 then 
-  echo "cloudflared-linux-amd64.deb already downloaded"
+  echo "cloudflared-linux-$(dpkg --print-architecture).deb already downloaded"
 else
-  echo "downloading cloudflared-linux-amd64.deb"
-  curl -OJL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb 
+  echo "downloading cloudflared-linux-$(dpkg --print-architecture).deb"
+  curl -OJL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-$(dpkg --print-architecture).deb 
 fi
 
 if (cloudflared --version)
