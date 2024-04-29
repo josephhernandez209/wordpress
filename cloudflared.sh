@@ -31,5 +31,5 @@ then
   echo "cloudflared service already active"
 else
   echo "activating cloudflared service"
-  sudo cloudflared service install $(cloudflared tunnel login)
+  sudo cloudflared service install $(cloudflared tunnel token 209bits)
 fi
